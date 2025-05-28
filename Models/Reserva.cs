@@ -1,60 +1,89 @@
+using System;
+using System.Collections.Generic;
+
 namespace DesafioProjetoHospedagem.Models
 {
     public class Reserva
     {
-        public List<Pessoa> Hospedes { get; set; }
-        public Suite Suite { get; set; }
-        public int DiasReservados { get; set; }
+        // Lista de hóspedes da reserva: Defini as propriedades como privadas.
+        public List<Pessoa> Hospedes { get; private set; } = new();
 
-        public Reserva() { }
+        // Suite associada a reserva
+        public Suite Suite { get; private set; }
 
+        // Quantidade de dias reservados.
+        public int DiasReservados { get; private set; }
+
+        // Inclui a Data e hora da reserva
+        public DateTime DataReserva { get; private set; } = DateTime.Now;
+
+        // Inicializa a data da reserva com a data atual
         public Reserva(int diasReservados)
         {
+            if (diasReservados <= 0)
+                throw new ArgumentException("A quantidade de dias reservados deve ser maior que zero.");
+
             DiasReservados = diasReservados;
+
         }
 
-        public void CadastrarHospedes(List<Pessoa> hospedes)
-        {
-            // TODO: Verificar se a capacidade é maior ou igual ao número de hóspedes sendo recebido
-            // *IMPLEMENTE AQUI*
-            if (true)
-            {
-                Hospedes = hospedes;
-            }
-            else
-            {
-                // TODO: Retornar uma exception caso a capacidade seja menor que o número de hóspedes recebido
-                // *IMPLEMENTE AQUI*
-            }
-        }
 
+
+        // Método para cadastrar a suíte
         public void CadastrarSuite(Suite suite)
         {
+            ValidarSuite(suite);
             Suite = suite;
         }
 
-        public int ObterQuantidadeHospedes()
+        // Método para cadastrar hóspedes
+        public void CadastrarHospedes(List<Pessoa> hospedes)
         {
-            // TODO: Retorna a quantidade de hóspedes (propriedade Hospedes)
-            // *IMPLEMENTE AQUI*
-            return 0;
+            //Verifica se a suíte já foi cadastrada
+            if (Suite == null)
+                throw new InvalidOperationException("A suíte deve ser cadastrada antes de adicionar hóspedes.");
+
+            if (hospedes == null || hospedes.Count == 0)
+                throw new ArgumentException("A lista de hóspedes não pode estar vazia.");
+
+            // Verifica se a quantidade de hóspedes é compatível com a capacidade da suíte
+            if (hospedes.Count > Suite.Capacidade)
+                throw new InvalidOperationException($"A quantidade de hóspedes ({hospedes.Count}) execede a capacidade da suíte ({Suite.Capacidade}).");
+
+            Hospedes = hospedes;
         }
+
+        // Retorna a quantidade de hópedes na reserva
+        public int ObterQuantidadeHospedes() => Hospedes.Count;
 
         public decimal CalcularValorDiaria()
-        {
-            // TODO: Retorna o valor da diária
-            // Cálculo: DiasReservados X Suite.ValorDiaria
-            // *IMPLEMENTE AQUI*
-            decimal valor = 0;
+        {   //Verifica se a suíte está cadastrada.
+            if (Suite == null)
+                throw new InvalidOperationException("A suíte deve estar cadastrada para calcular o valor da diária.");
 
-            // Regra: Caso os dias reservados forem maior ou igual a 10, conceder um desconto de 10%
-            // *IMPLEMENTE AQUI*
-            if (true)
-            {
-                valor = 0;
-            }
+            //Calcula o valor sem o desconto
+            decimal valor = DiasReservados * Suite.ValorDiaria;
+
+            if (DiasReservados >= 10)
+                valor *= 0.9M; // Aplica 10% de desconto.
 
             return valor;
+
         }
+
+        //Faz as validações da suíte.
+        private void ValidarSuite(Suite suite)
+        {
+            if (suite == null)
+                throw new ArgumentNullException("A suíte não pode ser nula.");
+
+            if (suite.Capacidade <= 0)
+                throw new ArgumentException("Acapacidade da suíte deve ser maior que zero.");
+
+            if (suite.ValorDiaria <= 0)
+                throw new ArgumentException("O valor da diária deve ser maior que zero.");
+
+        }
+        
     }
 }

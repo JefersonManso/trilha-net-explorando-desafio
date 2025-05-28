@@ -1,4 +1,5 @@
 namespace DesafioProjetoHospedagem.Models
+
 {
     public class Suite
     {

@@ -1,25 +1,48 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Text;
 using DesafioProjetoHospedagem.Models;
 
-Console.OutputEncoding = Encoding.UTF8;
 
-// Cria os modelos de hóspedes e cadastra na lista de hóspedes
-List<Pessoa> hospedes = new List<Pessoa>();
+class Program
+{
+    static void Main()
+    {
+        Console.OutputEncoding = Encoding.UTF8;
+        CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("pt-BR");
 
-Pessoa p1 = new Pessoa(nome: "Hóspede 1");
-Pessoa p2 = new Pessoa(nome: "Hóspede 2");
+        // Cria os modelos de hóspedes e cadastra na lista de hóspedes
+        try
+        {
+            var hospedes = new List<Pessoa>
+            {
+                new("Hóspede"),
+                new("Hóspede"),
+                new("Hóspede"),
+                new("Hóspede"),
+                new("Hóspede")
+            };
 
-hospedes.Add(p1);
-hospedes.Add(p2);
 
-// Cria a suíte
-Suite suite = new Suite(tipoSuite: "Premium", capacidade: 2, valorDiaria: 30);
+            // Cria a suíte
+            var suite = new Suite(tipoSuite: "Premium", capacidade: 4, valorDiaria: 20);
 
-// Cria uma nova reserva, passando a suíte e os hóspedes
-Reserva reserva = new Reserva(diasReservados: 5);
-reserva.CadastrarSuite(suite);
-reserva.CadastrarHospedes(hospedes);
+            // Cria uma nova reserva, passando a suíte e os hóspedes
+            var reserva = new Reserva(diasReservados: 10);
+            reserva.CadastrarSuite(suite);
+            reserva.CadastrarHospedes(hospedes);
 
-// Exibe a quantidade de hóspedes e o valor da diária
-Console.WriteLine($"Hóspedes: {reserva.ObterQuantidadeHospedes()}");
-Console.WriteLine($"Valor diária: {reserva.CalcularValorDiaria()}");
+            // Exibe a quantidade de hóspedes e o valor da diária
+            Console.WriteLine($"Hóspedes: {reserva.ObterQuantidadeHospedes()}");
+            Console.WriteLine($"Valor total da estadia: {reserva.CalcularValorDiaria():C2}");
+
+        }
+
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erro: {ex.Message}");
+        }
+    }
+
+}
